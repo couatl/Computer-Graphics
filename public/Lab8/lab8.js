@@ -25,23 +25,23 @@ function getMousePos(canvas, event) {
 
 function getPixel(index) {
     const imgData = context.getImageData(0, 0, canvas.width, canvas.height);
-    let i = index*4, d = imgData.data;
-    return [d[i],d[i+1],d[i+2],d[i+3]]; // returns array [R,G,B,A]
+    let i = index * 4, d = imgData.data;
+    return [d[i], d[i + 1], d[i + 2], d[i + 3]]; // returns array [R,G,B,A]
 }
 
 function getPixelXY(x, y) {
     const imgData = context.getImageData(0, 0, canvas.width, canvas.height);
-    return getPixel(y*imgData.width+x);
+    return getPixel(y * imgData.width + x);
 }
 
 function isColored(x, y, color) {
     const pixelColor = getPixelXY(x, y);
-    return JSON.stringify(pixelColor)==JSON.stringify(color);
+    return JSON.stringify(pixelColor) == JSON.stringify(color);
 }
 
 function colorPixel(x, y, color) {
-    context.fillStyle = "rgba("+color[0]+","+color[1]+","+color[2]+","+(color[3]/255)+")";
-    context.fillRect( x, y, 1, 1 );
+    context.fillStyle = "rgba(" + color[0] + "," + color[1] + "," + color[2] + "," + (color[3] / 255) + ")";
+    context.fillRect(x, y, 1, 1);
 }
 
 function floodfill(startX, startY, color) {
@@ -50,12 +50,27 @@ function floodfill(startX, startY, color) {
         x: startX,
         y: startY
     });
-    while(stack.length > 0) {
+
+    while (stack.length > 0) {
         let currPt = stack.pop();
-        if(!isColored(currPt.x, currPt.y, color)) { // Check if the point is not filled
-            colorPixel(currPt.x, currPt.y, color); // Fill the point
-            console.log('colored');
-            stack.push(currPt.x, currPt.y - 2); // Fill the north neighbour
+        if (!isColored(currPt.x, currPt.y, color)) {
+            colorPixel(currPt.x, currPt.y, color);
+            stack.push({
+                x: currPt.x + 1,
+                y: currPt.y
+            });
+            stack.push({
+                x: currPt.x,
+                y: currPt.y + 1
+            });
+            stack.push({
+                x: currPt.x - 1,
+                y: currPt.y
+            });
+            stack.push({
+                x: currPt.x,
+                y: currPt.y - 1
+            });
         }
     }
 }
@@ -63,15 +78,9 @@ function floodfill(startX, startY, color) {
 drawCircle(context, 100, 100, 40);
 
 canvas.addEventListener('click', (event) => {
-    //  Check if is's inside circle
     const mousePos = getMousePos(canvas, event);
     if (checkHit(context, mousePos.x, mousePos.y, 40)) {
         const color = [64, 255, 125, 255]; //r, g, b ,a
         floodfill(mousePos.x, mousePos.y, color);
-        // context.beginPath();
-        // context.arc(100, 100, 40, 0, 2 * Math.PI, false);
-        // context.fillStyle = '#40ff7d';
-        // context.fill();
-
     }
 });
