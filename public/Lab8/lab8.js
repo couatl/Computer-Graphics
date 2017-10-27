@@ -45,33 +45,12 @@ function colorPixel(x, y, color) {
 }
 
 function floodfill(startX, startY, color) {
-    let stack = [];
-    stack.push({
-        x: startX,
-        y: startY
-    });
-
-    while (stack.length > 0) {
-        let currPt = stack.pop();
-        if (!isColored(currPt.x, currPt.y, color)) {
-            colorPixel(currPt.x, currPt.y, color);
-            stack.push({
-                x: currPt.x + 1,
-                y: currPt.y
-            });
-            stack.push({
-                x: currPt.x,
-                y: currPt.y + 1
-            });
-            stack.push({
-                x: currPt.x - 1,
-                y: currPt.y
-            });
-            stack.push({
-                x: currPt.x,
-                y: currPt.y - 1
-            });
-        }
+    if (!isColored(startX, startY, color)) {
+        colorPixel(startX, startY, color);
+        floodfill(startX -1, startY, color);
+        floodfill(startX, startY-1, color);
+        floodfill(startX+1, startY, color);
+        floodfill(startX, startY+1, color);
     }
 }
 
