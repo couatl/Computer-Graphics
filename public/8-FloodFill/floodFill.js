@@ -1,7 +1,7 @@
 const canvas = document.getElementById('canvas');
 const context = canvas.getContext('2d');
 
-function drawCircle(context, x, y, r) {
+function drawRect(context, x, y, r) {
     context.beginPath();
     context.rect(x, y, r, r);
     context.lineWidth = 12;
@@ -26,7 +26,7 @@ function getMousePos(canvas, event) {
 function getPixel(index) {
     const imgData = context.getImageData(0, 0, canvas.width, canvas.height);
     let i = index * 4, d = imgData.data;
-    return [d[i], d[i + 1], d[i + 2], d[i + 3]]; // returns array [R,G,B,A]
+    return [d[i], d[i + 1], d[i + 2], d[i + 3]];
 }
 
 function getPixelXY(x, y) {
@@ -34,27 +34,45 @@ function getPixelXY(x, y) {
     return getPixel(y * imgData.width + x);
 }
 
-function isColored(x, y, color) {
-    const pixelColor = getPixelXY(x, y);
-    return JSON.stringify(pixelColor) == JSON.stringify(color);
+function arraysEqual(arr1, arr2) {
+    if (arr1.length !== arr2.length)
+        return false;
+    for (let i = arr1.length; i--;) {
+        if (arr1[i] !== arr2[i])
+            return false;
+    }
+
+    return true;
 }
 
-function colorPixel(x, y, color) {
-    context.fillStyle = "rgba(" + color[0] + "," + color[1] + "," + color[2] + "," + (color[3] / 255) + ")";
-    context.fillRect(x, y, 1, 1);
+function isColored(x, y, color) {
+    const pixelColor = getPixelXY(x, y);
+    return arraysEqual(pixelColor, color);
 }
+
+const id = context.createImageData(1, 1);
+let d = id.data;
+
+function colorPixel(x, y, color) {
+    d[0] = color[0];
+    d[1] = color[1];
+    d[2] = color[2];
+    d[3] = 255;
+    context.putImageData(id, x, y);
+}
+
 
 function floodfill(startX, startY, color) {
     if (!isColored(startX, startY, color)) {
         colorPixel(startX, startY, color);
-        floodfill(startX -1, startY, color);
-        floodfill(startX, startY-1, color);
-        floodfill(startX+1, startY, color);
-        floodfill(startX, startY+1, color);
+        floodfill(startX - 1, startY, color);
+        floodfill(startX, startY - 1, color);
+        floodfill(startX + 1, startY, color);
+        floodfill(startX, startY + 1, color);
     }
 }
 
-drawCircle(context, 100, 100, 40);
+drawRect(context, 100, 100, 40);
 
 canvas.addEventListener('click', (event) => {
     const mousePos = getMousePos(canvas, event);

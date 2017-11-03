@@ -1,0 +1,19 @@
+@font-face {
+    font-family: "Allura";
+    src: url('../fonts/Allura-Regular.ttf');
+}
+
+@font-face {
+    font-family: "Roboto";
+    src: url('../fonts/Roboto-Light.ttf');
+}
+
+canvas {
+    border: 3px solid #d3d3d3;
+}
+
+.task {
+    margin: 15px;
+    font-family: 'Roboto';
+    font-size: 24px;
+}
